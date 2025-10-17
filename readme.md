@@ -4,7 +4,7 @@
 
 Swift AWS Lambda Runtime was designed to make building Lambda functions in Swift simple and safe. The library is an implementation of the [AWS Lambda Runtime API](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html) and uses an embedded asynchronous HTTP Client based on [SwiftNIO](http://github.com/apple/swift-nio) that is fine-tuned for performance in the AWS Runtime context. The library provides a multi-tier API that allows building a range of Lambda functions: From quick and simple closures to complex, performance-sensitive event handlers.
 
-Swift AWS Lambda Events is a supporting library for the [Swift AWS Lambda Runtime](http://github.com/swift-server/swift-aws-lambda-runtime) library, providing abstractions for popular AWS events.
+Swift AWS Lambda Events is a supporting library for the [Swift AWS Lambda Runtime](http://github.com/awslabs/swift-aws-lambda-runtime) library, providing abstractions for popular AWS events.
 
 ## Integration with AWS Platform Events
 
@@ -22,9 +22,9 @@ AWS Lambda functions can be invoked directly from the AWS Lambda console UI, AWS
 
 ## Getting started
 
-If you have never used AWS Lambda or Docker before, check out this [tutorial](https://swiftpackageindex.com/swift-server/swift-aws-lambda-runtime/2.0.0-beta.3/tutorials/table-of-content) or the [getting started guide](https://swiftpackageindex.com/swift-server/swift-aws-lambda-runtime/2.0.0-beta.3/documentation/awslambdaruntime/quick-setup) which helps you with every step from zero to a running Lambda.
+If you have never used AWS Lambda or Docker before, check out this [tutorial](https://swiftpackageindex.com/awslabs/swift-aws-lambda-runtime/2.3.0/tutorials/table-of-content) or the [getting started guide](https://swiftpackageindex.com/awslabs/swift-aws-lambda-runtime/2.3.0/documentation/awslambdaruntime/quick-setup) which helps you with every step from zero to a running Lambda.
 
-Swift AWS Lambda Events is a supporting library for the [Swift AWS Lambda Runtime](http://github.com/swift-server/swift-aws-lambda-runtime) library, where you can find further documentation and examples.
+Swift AWS Lambda Events is a supporting library for the [Swift AWS Lambda Runtime](http://github.com/awslabs/swift-aws-lambda-runtime) library, where you can find further documentation and examples.
 
 ## Project status
 

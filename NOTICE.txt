@@ -4,9 +4,9 @@
 
 Please visit the SwiftAWSLambdaRuntime web site for more information:
 
-  * https://github.com/swift-server/swift-aws-lambda-runtime
+  * https://github.com/awslabs/swift-aws-lambda-runtime
 
-Copyright 2017-2021 The SwiftAWSLambdaRuntime Project
+Copyright 2017-2025 The SwiftAWSLambdaRuntime Project
 
 The SwiftAWSLambdaRuntime Project licenses this file to you under the Apache License,
 version 2.0 (the "License"); you may not use this file except in compliance

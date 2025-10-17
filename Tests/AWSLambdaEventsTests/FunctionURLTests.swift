@@ -12,11 +12,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Foundation
+import Testing
 
 @testable import AWSLambdaEvents
 
-class FunctionURLTests: XCTestCase {
+@Suite
+struct FunctionURLTests {
     /// Example event body pulled from [AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html#urls-request-payload).
     static let documentationExample = """
         {
@@ -124,30 +126,143 @@ class FunctionURLTests: XCTestCase {
 
     // MARK: Decoding
 
-    func testRequestDecodingDocumentationExampleRequest() {
+    @Test func requestDecodingDocumentationExampleRequest() throws {
         let data = Self.documentationExample.data(using: .utf8)!
-        var req: FunctionURLRequest?
-        XCTAssertNoThrow(req = try JSONDecoder().decode(FunctionURLRequest.self, from: data))
+        let req = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
 
-        XCTAssertEqual(req?.rawPath, "/my/path")
-        XCTAssertEqual(req?.requestContext.http.method, .post)
-        XCTAssertEqual(req?.queryStringParameters?.count, 2)
-        XCTAssertEqual(req?.rawQueryString, "parameter1=value1&parameter1=value2&parameter2=value")
-        XCTAssertEqual(req?.headers.count, 2)
-        XCTAssertEqual(req?.body, "Hello from client!")
+        #expect(req.rawPath == "/my/path")
+        #expect(req.requestContext.http.method == .post)
+        #expect(req.queryStringParameters?.count == 2)
+        #expect(req.rawQueryString == "parameter1=value1&parameter1=value2&parameter2=value")
+        #expect(req.headers.count == 2)
+        #expect(req.body == "Hello from client!")
     }
 
-    func testRequestDecodingRealWorldExampleRequest() {
+    @Test func requestDecodingRealWorldExampleRequest() throws {
         let data = Self.realWorldExample.data(using: .utf8)!
-        var req: FunctionURLRequest?
-        XCTAssertNoThrow(req = try JSONDecoder().decode(FunctionURLRequest.self, from: data))
+        let req = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
 
-        XCTAssertEqual(req?.rawPath, "/")
-        XCTAssertEqual(req?.requestContext.http.method, .get)
-        XCTAssertEqual(req?.queryStringParameters?.count, 1)
-        XCTAssertEqual(req?.rawQueryString, "test=2")
-        XCTAssertEqual(req?.headers.count, 10)
-        XCTAssertEqual(req?.cookies, ["test"])
-        XCTAssertNil(req?.body)
+        #expect(req.rawPath == "/")
+        #expect(req.requestContext.http.method == .get)
+        #expect(req.queryStringParameters?.count == 1)
+        #expect(req.rawQueryString == "test=2")
+        #expect(req.headers.count == 10)
+        #expect(req.cookies == ["test"])
+        #expect(req.body == nil)
+    }
+
+    // MARK: Codable Helpers Tests
+
+    @Test func decodeBodyWithNilBody() throws {
+        let data = Self.realWorldExample.data(using: .utf8)!
+        let request = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        #expect(decodedBody == nil)
+    }
+
+    @Test func decodeBodyWithPlainTextBody() throws {
+        let data = Self.documentationExample.data(using: .utf8)!
+        let request = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        let expectedBody = "Hello from client!".data(using: .utf8)
+        #expect(decodedBody == expectedBody)
+    }
+
+    @Test func decodeBodyWithBase64EncodedBody() throws {
+        let requestWithBase64Body = """
+            {
+                "version": "2.0",
+                "routeKey": "$default",
+                "rawPath": "/test",
+                "rawQueryString": "",
+                "headers": {},
+                "requestContext": {
+                    "accountId": "123456789012",
+                    "apiId": "<urlid>",
+                    "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
+                    "domainPrefix": "<url-id>",
+                    "http": {
+                        "method": "POST",
+                        "path": "/test",
+                        "protocol": "HTTP/1.1",
+                        "sourceIp": "123.123.123.123",
+                        "userAgent": "test"
+                    },
+                    "requestId": "id",
+                    "routeKey": "$default",
+                    "stage": "$default",
+                    "time": "12/Mar/2020:19:03:58 +0000",
+                    "timeEpoch": 1583348638390
+                },
+                "body": "SGVsbG8gZnJvbSBjbGllbnQh",
+                "isBase64Encoded": true
+            }
+            """
+
+        let data = requestWithBase64Body.data(using: .utf8)!
+        let request = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        let expectedBody = "Hello from client!".data(using: .utf8)
+        #expect(decodedBody == expectedBody)
+    }
+
+    @Test func decodeBodyAsDecodableType() throws {
+        // Use the documentationExample which already has a simple string body
+        let data = Self.documentationExample.data(using: .utf8)!
+        let request = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
+
+        // Test that we can decode the body as String
+        // The documentationExample has body: "Hello from client!" which is not valid JSON, so this should fail
+        #expect(throws: DecodingError.self) {
+            _ = try request.decodeBody(String.self)
+        }
+    }
+
+    @Test func decodeBodyAsDecodableTypeWithBase64() throws {
+        struct TestPayload: Codable, Equatable {
+            let message: String
+            let count: Int
+        }
+
+        let testPayload = TestPayload(message: "test", count: 42)
+
+        let requestWithBase64JSONBody = """
+            {
+                "version": "2.0",
+                "routeKey": "$default",
+                "rawPath": "/test",
+                "rawQueryString": "",
+                "headers": {},
+                "requestContext": {
+                    "accountId": "123456789012",
+                    "apiId": "<urlid>",
+                    "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
+                    "domainPrefix": "<url-id>",
+                    "http": {
+                        "method": "POST",
+                        "path": "/test",
+                        "protocol": "HTTP/1.1",
+                        "sourceIp": "123.123.123.123",
+                        "userAgent": "test"
+                    },
+                    "requestId": "id",
+                    "routeKey": "$default",
+                    "stage": "$default",
+                    "time": "12/Mar/2020:19:03:58 +0000",
+                    "timeEpoch": 1583348638390
+                },
+                "body": "eyJtZXNzYWdlIjoidGVzdCIsImNvdW50Ijo0Mn0=",
+                "isBase64Encoded": true
+            }
+            """
+
+        let data = requestWithBase64JSONBody.data(using: .utf8)!
+        let request = try JSONDecoder().decode(FunctionURLRequest.self, from: data)
+
+        let decodedPayload = try request.decodeBody(TestPayload.self)
+        #expect(decodedPayload == testPayload)
     }
 }

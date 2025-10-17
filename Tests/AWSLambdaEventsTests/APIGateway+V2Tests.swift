@@ -12,11 +12,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-import XCTest
+import Foundation
+import Testing
 
 @testable import AWSLambdaEvents
 
-class APIGatewayV2Tests: XCTestCase {
+@Suite
+struct APIGatewayV2Tests {
     static let exampleGetEventBody = """
         {
             "routeKey":"GET /hello",
@@ -189,36 +191,187 @@ class APIGatewayV2Tests: XCTestCase {
 
     // MARK: Decoding
 
-    func testRequestDecodingExampleGetRequest() {
+    @Test func requestDecodingExampleGetRequest() throws {
         let data = APIGatewayV2Tests.exampleGetEventBody.data(using: .utf8)!
-        var req: APIGatewayV2Request?
-        XCTAssertNoThrow(req = try JSONDecoder().decode(APIGatewayV2Request.self, from: data))
+        let req = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
 
-        XCTAssertEqual(req?.rawPath, "/hello")
-        XCTAssertEqual(req?.context.http.method, .get)
-        XCTAssertEqual(req?.queryStringParameters.count, 1)
-        XCTAssertEqual(req?.rawQueryString, "foo=bar")
-        XCTAssertEqual(req?.headers.count, 8)
-        XCTAssertEqual(req?.context.authorizer?.jwt?.claims?["aud"], "customers")
+        #expect(req.rawPath == "/hello")
+        #expect(req.context.http.method == .get)
+        #expect(req.queryStringParameters.count == 1)
+        #expect(req.rawQueryString == "foo=bar")
+        #expect(req.headers.count == 8)
+        #expect(req.context.authorizer?.jwt?.claims?["aud"] == "customers")
 
-        XCTAssertNil(req?.body)
+        #expect(req.body == nil)
     }
 
-    func testDecodingRequestClientCert() throws {
+    @Test func decodingRequestClientCert() throws {
         let data = APIGatewayV2Tests.fullExamplePayload.data(using: .utf8)!
         let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
         let clientCert = request.context.authentication?.clientCert
 
-        XCTAssertEqual(clientCert?.clientCertPem, "CERT_CONTENT")
-        XCTAssertEqual(clientCert?.subjectDN, "www.example.com")
-        XCTAssertEqual(clientCert?.issuerDN, "Example issuer")
-        XCTAssertEqual(clientCert?.serialNumber, "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1")
-        XCTAssertEqual(clientCert?.validity.notBefore, "May 28 12:30:02 2019 GMT")
-        XCTAssertEqual(clientCert?.validity.notAfter, "Aug  5 09:36:04 2021 GMT")
+        #expect(clientCert?.clientCertPem == "CERT_CONTENT")
+        #expect(clientCert?.subjectDN == "www.example.com")
+        #expect(clientCert?.issuerDN == "Example issuer")
+        #expect(clientCert?.serialNumber == "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1")
+        #expect(clientCert?.validity.notBefore == "May 28 12:30:02 2019 GMT")
+        #expect(clientCert?.validity.notAfter == "Aug  5 09:36:04 2021 GMT")
     }
 
-    func testDecodingNilCollections() {
+    @Test func decodingNilCollections() throws {
         let data = APIGatewayV2Tests.exampleGetEventBodyNilHeaders.data(using: .utf8)!
-        XCTAssertNoThrow(_ = try JSONDecoder().decode(APIGatewayV2Request.self, from: data))
+        #expect(throws: Never.self) {
+            _ = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+        }
+    }
+
+    // MARK: Codable Helpers Tests
+
+    @Test func decodeBodyWithNilBody() throws {
+        let data = APIGatewayV2Tests.exampleGetEventBodyNilHeaders.data(using: .utf8)!
+        let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        #expect(decodedBody == nil)
+    }
+
+    @Test func decodeBodyWithPlainTextBody() throws {
+        let requestWithBody = """
+            {
+                "routeKey":"POST /hello",
+                "version":"2.0",
+                "rawPath":"/hello",
+                "rawQueryString":"",
+                "requestContext":{
+                    "timeEpoch":1587750461466,
+                    "domainPrefix":"hello",
+                    "accountId":"0123456789",
+                    "stage":"$default",
+                    "domainName":"hello.test.com",
+                    "apiId":"pb5dg6g3rg",
+                    "requestId":"LgLpnibOFiAEPCA=",
+                    "http":{
+                        "path":"/hello",
+                        "userAgent":"test",
+                        "method":"POST",
+                        "protocol":"HTTP/1.1",
+                        "sourceIp":"127.0.0.1"
+                    },
+                    "time":"24/Apr/2020:17:47:41 +0000"
+                },
+                "isBase64Encoded":false,
+                "body":"Hello World!"
+            }
+            """
+
+        let data = requestWithBody.data(using: .utf8)!
+        let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        let expectedBody = "Hello World!".data(using: .utf8)
+        #expect(decodedBody == expectedBody)
+    }
+
+    @Test func decodeBodyWithBase64EncodedBody() throws {
+        let requestWithBase64Body = """
+            {
+                "routeKey":"POST /hello",
+                "version":"2.0",
+                "rawPath":"/hello",
+                "rawQueryString":"",
+                "requestContext":{
+                    "timeEpoch":1587750461466,
+                    "domainPrefix":"hello",
+                    "accountId":"0123456789",
+                    "stage":"$default",
+                    "domainName":"hello.test.com",
+                    "apiId":"pb5dg6g3rg",
+                    "requestId":"LgLpnibOFiAEPCA=",
+                    "http":{
+                        "path":"/hello",
+                        "userAgent":"test",
+                        "method":"POST",
+                        "protocol":"HTTP/1.1",
+                        "sourceIp":"127.0.0.1"
+                    },
+                    "time":"24/Apr/2020:17:47:41 +0000"
+                },
+                "isBase64Encoded":true,
+                "body":"SGVsbG8gV29ybGQh"
+            }
+            """
+
+        let data = requestWithBase64Body.data(using: .utf8)!
+        let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+
+        let decodedBody = try request.decodeBody()
+        let expectedBody = "Hello World!".data(using: .utf8)
+        #expect(decodedBody == expectedBody)
+    }
+
+    @Test func decodeBodyAsDecodableType() throws {
+        struct TestPayload: Codable, Equatable {
+            let message: String
+            let count: Int
+        }
+
+        // Use the fullExamplePayload which already has a simple JSON body
+        let data = APIGatewayV2Tests.fullExamplePayload.data(using: .utf8)!
+        let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+
+        // Test that we can decode the body as String
+        // The fullExamplePayload has body: "Hello from Lambda" which is not valid JSON, so this should fail
+        #expect(throws: DecodingError.self) {
+            _ = try request.decodeBody(TestPayload.self)
+        }
+    }
+
+    @Test func decodeBodyAsDecodableTypeWithCustomDecoder() throws {
+        struct TestPayload: Codable, Equatable {
+            let messageText: String
+            let count: Int
+
+            enum CodingKeys: String, CodingKey {
+                case messageText = "message_text"
+                case count
+            }
+        }
+
+        let testPayload = TestPayload(messageText: "test", count: 42)
+
+        let requestWithBase64JSONBody = """
+            {
+                "routeKey":"POST /hello",
+                "version":"2.0",
+                "rawPath":"/hello",
+                "rawQueryString":"",
+                "requestContext":{
+                    "timeEpoch":1587750461466,
+                    "domainPrefix":"hello",
+                    "accountId":"0123456789",
+                    "stage":"$default",
+                    "domainName":"hello.test.com",
+                    "apiId":"pb5dg6g3rg",
+                    "requestId":"LgLpnibOFiAEPCA=",
+                    "http":{
+                        "path":"/hello",
+                        "userAgent":"test",
+                        "method":"POST",
+                        "protocol":"HTTP/1.1",
+                        "sourceIp":"127.0.0.1"
+                    },
+                    "time":"24/Apr/2020:17:47:41 +0000"
+                },
+                "isBase64Encoded":true,
+                "body":"eyJtZXNzYWdlX3RleHQiOiJ0ZXN0IiwiY291bnQiOjQyfQ==",
+                "headers":{}
+            }
+            """
+
+        let data = requestWithBase64JSONBody.data(using: .utf8)!
+        let request = try JSONDecoder().decode(APIGatewayV2Request.self, from: data)
+
+        let decodedPayload = try request.decodeBody(TestPayload.self)
+        #expect(decodedPayload == testPayload)
     }
 }

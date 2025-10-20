@@ -74,7 +74,7 @@ extension String.UTF8View {
     }
 }
 
-extension HTTPResponse.Status: Codable {
+extension  HTTPResponse.Status: @retroactive Codable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.code)
@@ -86,7 +86,7 @@ extension HTTPResponse.Status: Codable {
     }
 }
 
-extension HTTPRequest.Method: Codable {
+extension HTTPRequest.Method: @retroactive Codable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.rawValue)

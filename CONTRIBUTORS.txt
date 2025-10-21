@@ -7,11 +7,14 @@ needs to be listed here.
 
 ## COPYRIGHT HOLDERS
 
+- Amazon.com, Inc. (all contributors with '@amazon.com')
 - Apple Inc. (all contributors with '@apple.com')
 
 ### Contributors
 
 - Adam Fowler <adamfowler71@gmail.com>
+- Adolfo <fitomad@users.noreply.github.com>
+- Alessio Buratti <9006089+Buratti@users.noreply.github.com>
 - Andrea Scuderi <andreascuderi@ymail.com>
 - Brendan Kirchner <brendankirchner@me.com>
 - Bryan Bartow <bryanbartow@gmail.com>
@@ -23,18 +26,34 @@ needs to be listed here.
 - Eneko Alonso <eneko.alonso@gmail.com>
 - Fabian Fett <fabianfett@apple.com>
 - Filipp Fediakov <julik103@mail.ru>
+- Franz Busch <privat@franz-busch.de>
 - George Barnett <gbarnett@apple.com>
+- Idelfonso Gutierrez <idelfonsog2@gmail.com>
+- Joannis Orlandos <joannis@orlandos.nl>
 - Johannes Bosecker <j.bosecker.dev@icloud.com>
 - Johannes Weiss <johannesweiss@apple.com>
 - Josh <29730338+mr-j-tree@users.noreply.github.com>
 - ML <44809298+mufumade@users.noreply.github.com>
+- Mahdi Bahrami <github@mahdibm.com>
 - Matt Massicotte <85322+mattmassicotte@users.noreply.github.com>
 - Max Desiatov <max@desiatov.com>
+- Mike Lewis <mike@mplew.is>
+- Natan Rolnik <natanrolnik@gmail.com>
 - Norman Maurer <norman_maurer@apple.com>
 - Ralph Küpper <ralph.kuepper@skelpo.com>
+- Renato Guimarães <renatoaguimaraes@gmail.com>
+- Richard Kendall Wolf <richwolf@me.com>
 - Ro-M <Ro-M@users.noreply.github.com>
+- Simon Leeb <52261246+sliemeobn@users.noreply.github.com>
+- Stefan Nienhuis <stefan@nienhuisdevelopment.com>
+- Sébastien Stormacq <sebastien.stormacq@gmail.com>
+- Taylor <hiimtmac+github@gmail.com>
+- Tobias <t089@users.noreply.github.com>
 - Tomer Doron <tomer@apple.com>
+- Ugo Cottin <ugo.cottin@gmail.com>
+- Yim Lee <yim_lee@apple.com>
 - Zhibin Cai <TonyChol@users.noreply.github.com>
+- jsonfry <jason@jasonfry.co.uk>
 - pmarrufo <p_marrufo94@hotmail.com>
 - pokryfka <5090827+pokryfka@users.noreply.github.com>
 - pokryfka <pokryfka@gmail.com>

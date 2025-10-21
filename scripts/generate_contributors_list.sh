@@ -27,6 +27,7 @@ cat > "$here/../CONTRIBUTORS.txt" <<- EOF
 
 	## COPYRIGHT HOLDERS
 
+	- Amazon.com, Inc. (all contributors with '@amazon.com')
 	- Apple Inc. (all contributors with '@apple.com')
 
 	### Contributors

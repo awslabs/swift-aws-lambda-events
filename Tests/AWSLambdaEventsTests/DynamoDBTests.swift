@@ -251,4 +251,59 @@ struct DynamoDBTests {
         #expect(test?.foo == "bar")
         #expect(test?.xyz == 123)
     }
+
+    @Test func decoderEmptyList() {
+        let value: [String: DynamoDBEvent.AttributeValue] = [
+            "fooList": .list([])
+        ]
+
+        struct Test: Codable {
+            let fooList: [Int]
+        }
+
+        let test = try? DynamoDBEvent.Decoder().decode(Test.self, from: value)
+        #expect(test?.fooList == [])
+    }
+
+    @Test func decoderNonEmptyList() {
+        let value: [String: DynamoDBEvent.AttributeValue] = [
+            "fooList": .list([.string("test")])
+        ]
+
+        struct Test: Codable {
+            let fooList: [String]
+        }
+
+        let test = try? DynamoDBEvent.Decoder().decode(Test.self, from: value)
+        #expect(test?.fooList == ["test"])
+    }
+
+    @Test func decoderBinaryToBase64KeyedDecodingContainer() {
+        let value: [String: DynamoDBEvent.AttributeValue] = [
+            "xyz": .binary([0x74, 0x65, 0x73, 0x74])  // UTF8 for "test"
+        ]
+
+        struct Test: Codable {
+            let xyz: String
+        }
+
+        let test = try? DynamoDBEvent.Decoder().decode(Test.self, from: value)
+        #expect(test?.xyz == "dGVzdA==")  // base64 for "test"
+    }
+
+    @Test func decoderBinaryToBase64SingleValueDecodingContainer() {
+        let value: DynamoDBEvent.AttributeValue = .binary([0x74, 0x65, 0x73, 0x74])  // UTF8 for "test"
+
+        let test = try? DynamoDBEvent.Decoder().decode(String.self, from: value)
+        #expect(test == "dGVzdA==")  // base64 for "test"
+    }
+
+    @Test func decoderBinaryToBase64UnkeyedValueContainer() {
+        let value: DynamoDBEvent.AttributeValue = .list([
+            .binary([0x74, 0x65, 0x73, 0x74])  // UTF8 for "test"
+        ])
+
+        let test = try? DynamoDBEvent.Decoder().decode([String].self, from: value)
+        #expect(test == ["dGVzdA=="])  // base64 for "test"
+    }
 }

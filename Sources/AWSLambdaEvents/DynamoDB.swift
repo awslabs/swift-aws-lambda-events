@@ -466,7 +466,7 @@ extension DynamoDBEvent {
             case .string(let string):
                 return string
             case .binary(let binary):
-                return Data(binary).base64EncodedString()
+                return Base64.encodeToString(bytes: binary)
             default:
                 throw self.createTypeMismatchError(type: type, forKey: key, value: value)
             }
@@ -658,7 +658,7 @@ extension DynamoDBEvent {
             case .string(let string):
                 return string
             case .binary(let binary):
-                return Data(binary).base64EncodedString()
+                return Base64.encodeToString(bytes: binary)
             default:
                 throw self.createTypeMismatchError(type: String.self, value: self.value)
             }

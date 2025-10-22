@@ -462,11 +462,14 @@ extension DynamoDBEvent {
         func decode(_ type: String.Type, forKey key: K) throws -> String {
             let value = try getValue(forKey: key)
 
-            guard case .string(let string) = value else {
+            switch value {
+            case .string(let string):
+                return string
+            case .binary(let binary):
+                return Data(binary).base64EncodedString()
+            default:
                 throw self.createTypeMismatchError(type: type, forKey: key, value: value)
             }
-
-            return string
         }
 
         func decode(_ type: Double.Type, forKey key: K) throws -> Double {
@@ -651,11 +654,14 @@ extension DynamoDBEvent {
         }
 
         func decode(_: String.Type) throws -> String {
-            guard case .string(let string) = self.value else {
+            switch self.value {
+            case .string(let string):
+                return string
+            case .binary(let binary):
+                return Data(binary).base64EncodedString()
+            default:
                 throw self.createTypeMismatchError(type: String.self, value: self.value)
             }
-
-            return string
         }
 
         func decode(_: Double.Type) throws -> Double {
@@ -769,6 +775,9 @@ extension DynamoDBEvent {
             self.codingPath = codingPath
             self.array = array
             self.count = array.count
+
+            // No need to decode if array is empty
+            self.isAtEnd = array.isEmpty
         }
 
         mutating func decodeNil() throws -> Bool {

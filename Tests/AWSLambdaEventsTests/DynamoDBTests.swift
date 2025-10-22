@@ -298,7 +298,7 @@ struct DynamoDBTests {
         #expect(test == "dGVzdA==")  // base64 for "test"
     }
 
-    @Test func decoderBinaryToBase64UnkeyedValueContainer() {
+    @Test func decoderBinaryToBase64UnkeyedDecodingContainer() {
         let value: DynamoDBEvent.AttributeValue = .list([
             .binary([0x74, 0x65, 0x73, 0x74])  // UTF8 for "test"
         ])

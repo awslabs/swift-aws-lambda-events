@@ -10,8 +10,7 @@ let package = Package(
         .library(name: "AWSLambdaEvents", targets: ["AWSLambdaEvents"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-http-types.git", exact: "1.4.0"),
+        .package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1")
     ],
     targets: [
         .target(

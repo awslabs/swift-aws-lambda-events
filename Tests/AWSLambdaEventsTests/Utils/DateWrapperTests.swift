@@ -66,9 +66,13 @@ struct DateWrapperTests {
         let date = "2020-03-26T16:53:05Z"  // missing fractional seconds
         let json = #"{"date":"\#(date)"}"#
         #if swift(<6.2)
-        let error = (any Error).self
+            let error = (any Error).self
         #else
-        let error = Never.self
+            #if canImport(FoundationEssentials)
+                let error = Never.self
+            #else 
+                let error = (any Error).self
+            #endif
         #endif
         #expect(throws: error) {
             try JSONDecoder().decode(TestEvent.self, from: json.data(using: .utf8)!)

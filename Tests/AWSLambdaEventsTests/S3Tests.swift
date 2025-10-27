@@ -112,6 +112,8 @@ struct S3Tests {
         #expect(record.awsRegion == .eu_central_1)
         #expect(record.eventName == "ObjectCreated:Put")
         #expect(record.eventTime.ISO8601Format() == Date(timeIntervalSince1970: 1_578_907_540.621).ISO8601Format())
+        // see https://github.com/swiftlang/swift-foundation/issues/1561#issuecomment-3448853449
+        #expect(abs(record.eventTime.timeIntervalSince1970 - 1_578_907_540.621) < 0.0005)
         #expect(record.userIdentity == S3Event.UserIdentity(principalId: "AWS:AAAAAAAJ2MQ4YFQZ7AULJ"))
         #expect(record.requestParameters == S3Event.RequestParameters(sourceIPAddress: "123.123.123.123"))
         #expect(record.responseElements.count == 2)
@@ -136,6 +138,8 @@ struct S3Tests {
         #expect(record.awsRegion == .eu_central_1)
         #expect(record.eventName == "ObjectRemoved:DeleteMarkerCreated")
         #expect(record.eventTime.ISO8601Format() == Date(timeIntervalSince1970: 1_578_907_540.621).ISO8601Format())
+        // see https://github.com/swiftlang/swift-foundation/issues/1561#issuecomment-3448853449
+        #expect(abs(record.eventTime.timeIntervalSince1970 - 1_578_907_540.621) < 0.0005)
         #expect(record.userIdentity == S3Event.UserIdentity(principalId: "AWS:AAAAAAAJ2MQ4YFQZ7AULJ"))
         #expect(record.requestParameters == S3Event.RequestParameters(sourceIPAddress: "123.123.123.123"))
         #expect(record.responseElements.count == 2)

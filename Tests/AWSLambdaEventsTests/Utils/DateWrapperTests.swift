@@ -68,7 +68,11 @@ struct DateWrapperTests {
         #if swift(<6.2)
         let error = (any Error).self
         #else
+        #if canImport(FoundationEssentials)
         let error = Never.self
+        #else
+        let error = (any Error).self
+        #endif
         #endif
         #expect(throws: error) {
             try JSONDecoder().decode(TestEvent.self, from: json.data(using: .utf8)!)

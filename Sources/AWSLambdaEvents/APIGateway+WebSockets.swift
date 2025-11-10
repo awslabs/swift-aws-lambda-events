@@ -39,6 +39,7 @@ public struct APIGatewayWebSocketRequest: Codable {
     }
 
     public let headers: HTTPHeaders?
+    public let queryStringParameters: [String: String]?
     public let multiValueHeaders: HTTPMultiValueHeaders?
     public let context: Context
     public let body: String?
@@ -46,6 +47,7 @@ public struct APIGatewayWebSocketRequest: Codable {
 
     enum CodingKeys: String, CodingKey {
         case headers
+        case queryStringParameters
         case multiValueHeaders
         case context = "requestContext"
         case body

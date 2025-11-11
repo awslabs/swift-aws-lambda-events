@@ -65,7 +65,7 @@ class APIGatewayWebSocketsTests {
         }
         """
 
-	static let exampleConnectEventBodyWithQueryParams = """
+    static let exampleConnectEventBodyWithQueryParams = """
         {
           "headers": {
             "Host": "lqrlmblaa2.execute-api.us-east-1.amazonaws.com",

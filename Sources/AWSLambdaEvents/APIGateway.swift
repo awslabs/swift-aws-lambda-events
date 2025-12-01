@@ -77,6 +77,8 @@ public struct APIGatewayRequest: Encodable, Sendable {
     public let isBase64Encoded: Bool
 }
 
+extension APIGatewayRequest: DecodableRequest {}
+
 // MARK: - Response -
 
 public struct APIGatewayResponse: Codable, Sendable {

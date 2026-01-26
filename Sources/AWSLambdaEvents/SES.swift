@@ -98,6 +98,7 @@ public struct SESEvent: Decodable, Sendable {
         case pass = "PASS"
         case fail = "FAIL"
         case gray = "GRAY"
+        case disabled = "DISABLED"
         case processingFailed = "PROCESSING_FAILED"
     }
 }

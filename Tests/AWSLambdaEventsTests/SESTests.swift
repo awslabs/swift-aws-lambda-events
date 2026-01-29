@@ -158,7 +158,9 @@ struct SESTests {
         }
         """
 
-    @Test(arguments: [(SESTests.eventBody, SESEvent.Status.pass), (SESTests.eventBodyDisabled, SESEvent.Status.disabled)])
+    @Test(arguments: [
+        (SESTests.eventBody, SESEvent.Status.pass), (SESTests.eventBodyDisabled, SESEvent.Status.disabled),
+    ])
     func simpleEventFromJSON(input: (String, SESEvent.Status)) throws {
         let data = Data(input.0.utf8)
         let event = try JSONDecoder().decode(SESEvent.self, from: data)

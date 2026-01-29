@@ -158,9 +158,9 @@ struct SESTests {
         }
         """
 
-    @Test(arguments: [SESTests.eventBody, SESTests.eventBodyDisabled])
-    func simpleEventFromJSON(event: String) throws {
-        let data = Data(event.utf8)
+    @Test(arguments: [(SESTests.eventBody, SESEvent.Status.pass), (SESTests.eventBodyDisabled, SESEvent.Status.disabled)])
+    func simpleEventFromJSON(input: (String, SESEvent.Status)) throws {
+        let data = Data(input.0.utf8)
         let event = try JSONDecoder().decode(SESEvent.self, from: data)
         let record = try #require(event.records.first)
 
@@ -192,7 +192,7 @@ struct SESTests {
         #expect(record.ses.receipt.processingTimeMillis == 574)
         #expect(record.ses.receipt.recipients[0] == "test@swift-server.com")
         #expect(record.ses.receipt.recipients[1] == "test2@swift-server.com")
-        #expect(record.ses.receipt.spamVerdict.status == .pass || record.ses.receipt.spamVerdict.status == .disabled)
+        #expect(record.ses.receipt.spamVerdict.status == input.1)
         #expect(record.ses.receipt.spfVerdict.status == .processingFailed)
         #expect(record.ses.receipt.timestamp.description == "1970-01-01 00:00:00 +0000")
         #expect(record.ses.receipt.virusVerdict.status == .fail)
